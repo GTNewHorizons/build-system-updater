@@ -10,6 +10,7 @@ main() {
     pushd "$repository_name"
       git fetch origin master
       git reset origin/master
+      git reset --hard origin/master
       git clean -df # "-d" - recurse into directories; "-f" force in case of submodules or "clean.requireForce" set to true
     popd
   else

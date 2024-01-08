@@ -5,44 +5,44 @@ set -eu
 
 main() {
   repository_root="$(dirname "$(readlink --canonicalize "${0}")")"
-  
+
   pull_script="$repository_root/scripts/pull.sh"
   reports_directory="$repository_root/reports"
   failed_pull_list_file="$reports_directory/failed-pulls.list"
-  
+
   upgrade_script="$repository_root/scripts/upgrade.sh"
   failed_upgrade_list_file="$reports_directory/failed-upgrades.list"
-  
+
   publish_script="$repository_root/scripts/publish.sh"
   failed_publish_list_file="$reports_directory/failed-publishes.list"
-  
+
   repositories_directory="/tmp/org-build-system-update/repositories"
   repositories_list_file="$repository_root/repositories.list"
   # "-t" Remove a trailing DELIM from each line read (default newline)
-  mapfile -t REPOSITORIES < "$repositories_list_file" 
+  mapfile -t REPOSITORIES < "$repositories_list_file"
 
   echo "---> Upgrading all repositories"
 
   rm --force "$failed_pull_list_file" "$failed_upgrade_list_file" "$failed_publish_list_file"
   mkdir --parents "$repositories_directory" "$reports_directory"
   pushd "$repositories_directory"
-  
+
     pull_each_with "$pull_script" "$failed_pull_list_file"
     if [[ -f "$failed_pull_list_file" ]]; then
-     
+
       echo "<-! Failed to pull:";
       cat "$failed_pull_list_file"
       exit 1
     fi
-  
+
     for_each_repository upgrade_with "$upgrade_script" "$failed_upgrade_list_file"
     if [[ -f "$failed_upgrade_list_file" ]]; then
-     
+
       echo "<-! Failed to upgrade:";
       cat "$failed_upgrade_list_file"
       exit 1
     fi
-      
+
     for_each_repository publish_changes "$publish_script" "$failed_publish_list_file"
     if [[ -f "$failed_publish_list_file" ]]; then
       echo "<-! Failed to publish changes:";
@@ -113,7 +113,7 @@ for_each_repository() {
     do
       repository_name_with_extension="${repository_url##*/}"
       repository_name="${repository_name_with_extension%.*}"
-      
+
       pushd "$repository_name"
         # shellcheck disable=SC2068
         $command "$repository_name" $@

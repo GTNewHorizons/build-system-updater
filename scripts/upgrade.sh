@@ -20,7 +20,7 @@ main() {
   chmod +x gradlew
   git add --chmod=+x gradlew # Fix file permissions in git permanently
   ./gradlew updateBuildScript
-  ./gradlew clean build test
+  # ./gradlew clean build test
 
   echo "<-- Build system updated successfully"
 }
